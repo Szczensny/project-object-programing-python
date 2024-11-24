@@ -7,3 +7,6 @@ export MYSQL_DB_NAME=habbitapp
 
 run:
 	python src/home.py
+
+run_web:
+	streamlit run src/home.py
