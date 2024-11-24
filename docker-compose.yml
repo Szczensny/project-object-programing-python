@@ -1,0 +1,15 @@
+services:
+
+  db:
+    image: mysql:9.1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: objectpython
+      MYSQL_DATABASE: habbitapp
+      MYSQL_USER: example
+      MYSQL_PASSWORD: test
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    
