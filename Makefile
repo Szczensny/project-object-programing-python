@@ -10,3 +10,12 @@ run:
 
 run_web:
 	streamlit run src/home.py
+
+test_run:
+	python src/main.py
+
+test:
+	docker-compose -f docker-compose.testing.yml up -d
+	coverage run -m --source=src pytest 
+	coverage report -m
+	#docker-compose -f docker-compose.testing.yml down

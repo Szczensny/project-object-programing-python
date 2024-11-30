@@ -1,0 +1,13 @@
+services:
+
+  db:
+    image: mysql:9.1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: test
+    ports:
+      - 3306:3306
+    

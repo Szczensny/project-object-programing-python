@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Engine
 from sqlalchemy.engine import Connection, Row, CursorResult
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from sqlalchemy import text
 import pandas as pd
 from typing import Sequence
@@ -7,16 +8,24 @@ import os
 
 class MySQLUtil():
     def __init__(self, host:str=None, port:str=None, username:str=None, password:str=None, db_name:str=None):
-        self.host = host if os.getenv('MYSQL_HOST') is None else os.getenv('MYSQL_HOST')
-        self.port = port if os.getenv('MYSQL_PORT') is None else os.getenv('MYSQL_PORT')
-        self.username = username if os.getenv('MYSQL_USERNAME') is None else os.getenv('MYSQL_USERNAME')
-        self.password = password if os.getenv('MYSQL_PASSWORD') is None else os.getenv('MYSQL_PASSWORD')
-        self.db_name = db_name if os.getenv('MYSQL_DB_NAME') is None else os.getenv('MYSQL_DB_NAME')
+        self.host = os.getenv('MYSQL_HOST') if host is None else host
+        self.port = os.getenv('MYSQL_PORT') if port is None else port
+        self.username = os.getenv('MYSQL_USERNAME') if username is None else username
+        self.password = os.getenv('MYSQL_PASSWORD') if password is None else password
+        self.db_name = os.getenv('MYSQL_DB_NAME') if db_name is None else db_name
         self.connection_url = f"mysql+mysqlconnector://{self.username}:{self.password}@{self.host}:{self.port}/{self.db_name}"
-        print(self.connection_url)
         if self.host is None or self.port is None or self.username is None or self.password is None or self.db_name is None:
             raise ValueError('Connection values to DB has not been provided')
 
+    def get_engine(self) -> Engine:
+        engine = create_engine(self.connection_url)
+        return engine
+
+    def get_session(self) -> Session:
+        engine = self.get_engine()
+        sn = sessionmaker(bind=engine)
+        return sn()  
+      
     def get_connection(self) -> Connection:
         engine = create_engine(self.connection_url)
         connection = engine.connect()
