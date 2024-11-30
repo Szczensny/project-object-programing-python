@@ -14,8 +14,19 @@ run_web:
 test_run:
 	python src/main.py
 
-test:
+start_db:
+	docker-compose -f docker-compose.yml up -d
+stop_db:
+	docker-compose -f docker-compose.yml down
+
+start_test_db:
 	docker-compose -f docker-compose.testing.yml up -d
-	coverage run -m --source=src pytest 
-	coverage report -m
+stop_test_db:
 	docker-compose -f docker-compose.testing.yml down
+
+test:
+	coverage run -m --source=src pytest
+	coverage report -m
+
+test2:
+	pytest

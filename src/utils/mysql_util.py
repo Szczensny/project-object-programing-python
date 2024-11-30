@@ -18,12 +18,12 @@ class MySQLUtil():
             raise ValueError('Connection values to DB has not been provided')
 
     def get_engine(self) -> Engine:
-        engine = create_engine(self.connection_url)
+        engine = create_engine(self.connection_url).execution_options(auautocommit=True)
         return engine
 
     def get_session(self) -> Session:
         engine = self.get_engine()
-        sn = sessionmaker(bind=engine)
+        sn = sessionmaker(bind=engine, autoflush=True)
         return sn()  
       
     def get_connection(self) -> Connection:
@@ -34,6 +34,7 @@ class MySQLUtil():
     def execute_raw_query(self, query:str) -> CursorResult:
         conn = self.get_connection()
         result = conn.execute(text(query))
+        conn.commit()
         conn.close()
         return result
     
