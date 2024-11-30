@@ -1,13 +1,11 @@
 from src.utils.mysql_util import MySQLUtil
-from src.utils.db_base import BASE
-from src.habits.habit import Habit
-from src.habits.habit_event import HabitEvent
+from src.habits.db_models import BASE, Habit, HabitEvent
 import pytest 
 import os
 from unittest import mock
 from sqlalchemy import text
 
-@pytest.fixture(scope="module") # or "module" (to teardown at a module level)
+@pytest.fixture(scope="module")
 def db_session():
     mysql = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
     engine = mysql.get_engine()

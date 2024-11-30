@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.engine import Connection, Row, CursorResult
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import text
 import pandas as pd
 from typing import Sequence
