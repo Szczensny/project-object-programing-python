@@ -1,6 +1,6 @@
 services:
 
-  db:
+  db-test:
     image: mysql:9.1
     restart: always
     environment:
@@ -9,5 +9,5 @@ services:
       MYSQL_USER: testuser
       MYSQL_PASSWORD: test
     ports:
-      - 3306:3306
+      - 3307:3306
     

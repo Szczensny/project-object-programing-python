@@ -4,10 +4,16 @@ import pytest
 import os
 from unittest import mock
 from sqlalchemy import text
+from time import sleep
 
-@pytest.fixture(scope="module")
+print('wait 15 sec for db to start')
+sleep(15)
+
+@pytest.fixture()
 def db_session():
-    mysql = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+    print('wait 15 seconds for to start')
+    sleep(15)
+    mysql = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
     engine = mysql.get_engine()
     session = mysql.get_session()
 
@@ -36,7 +42,7 @@ def test_db_setup_no_data():
 
 def test_engine_setup():
     try:
-        ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+        ms = MySQLUtil('localhost', '3307', 'testuser', 'test', 'testdb')
         engine = ms.get_engine()
         connection = engine.connect()
         connection.execute(text('select 1'))
@@ -46,7 +52,7 @@ def test_engine_setup():
 
 def test_session_setup():
     try:
-        ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+        ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
         session = ms.get_session()
         session.begin()
         session.close()
@@ -56,7 +62,7 @@ def test_session_setup():
 
 def test_connection():
     try:
-        ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+        ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
         conn = ms.get_connection()
         conn.close()
         assert True
@@ -64,7 +70,7 @@ def test_connection():
         assert False
 
 def test_execution_raw_query():
-    ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+    ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
     try:
         ms.execute_raw_query('select 1;')
         assert True
@@ -73,13 +79,13 @@ def test_execution_raw_query():
 
 def test_get_data():
     query = 'Select 1 as test_nb;'
-    ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+    ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
     data = ms.get_data(query)
     assert data[0][0] == 1
 
 def test_get_df():
     query = 'Select 1 as test_nb, 2 as test_col2;'
-    ms = MySQLUtil('localhost', 3306, 'testuser', 'test', 'testdb')
+    ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
     df = ms.get_df(query)
     expected_cols = ['test_nb', 'test_col2']
 
