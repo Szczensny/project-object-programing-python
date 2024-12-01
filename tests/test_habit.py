@@ -37,6 +37,18 @@ def test_habbit_creation_already_exists():
         h2 = Habit.create_habbit(ms_session, 'test_uuid3', 'test_habbit3', 'daily')
     except ValueError:
         assert True
+
+def test_get_habbit_by_name():
+    recreate_tables()
+    h1 = Habit.create_habbit(ms_session, 'test_uuid44', 'test_habbit44', 'daily')
+    h2 = Habit.get_habit_by_name(ms_session,'test_habbit44')
+    h3 = Habit.get_habit_by_name(ms_session,'test_habbit444')
+
+    assert h1.name == h2.name
+    assert h1.created_at == h2.created_at
+    assert h1.frequency == h2.frequency
+    assert h1.uuid == h2.uuid
+    assert h3 is None
     
 def test_get_habbit_by_uuid():
     recreate_tables()

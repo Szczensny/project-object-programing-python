@@ -52,6 +52,13 @@ class Habit():
             return True
         except NoResultFound:
             return False
+    @staticmethod
+    def get_habit_by_name(session:Session, name:str) -> Habit:
+        try:
+            result = session.query(HabitDB).filter(HabitDB.name == name).one()
+            return Habit(result.uuid, result.name, result.frequency, result.created_at)
+        except NoResultFound:
+            return None
     
     def update_habit_name(self, session:Session, name:str) -> None:
         session.query(HabitDB).filter(HabitDB.uuid == self.uuid).update({HabitDB.name: name})
