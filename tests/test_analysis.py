@@ -1,5 +1,5 @@
 from habits.habit import Habit
-from habits.analyis_functions import get_all_habits_tracked, get_all_habits_tracked_frequency, get_longest_strike
+from habits.analyis_functions import get_all_habits_tracked, get_all_habits_tracked_frequency, get_longest_strike, max_min_date_for_week
 from habits.db_models import HabitEventDB
 import datetime 
 
@@ -52,17 +52,13 @@ def test_get_all_habbits_frequency():
 def test_get_longest_strike_daily_all_chekced():
     h1 = Habit('test_uuid1', 'test_name1', 'daily', created_at=datetime.datetime.now())
     ts1 = datetime.datetime(2024,11,1)
-    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, 
-                             event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
     ts2 = datetime.datetime(2024,11,2)
-    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, 
-                             event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
     ts3 = datetime.datetime(2024,11,3)
-    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, 
-                             event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
     ts4 = datetime.datetime(2024,11,4)
-    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, 
-                             event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
     event_list = [h1_event1, h1_event2, h1_event4, h1_event3]
     expected = {"max_strike_times": 4 , "max_date": h1_event4.created_at.date(), "min_date": h1_event1.created_at.date()}
     data = get_longest_strike(h1, event_list)
@@ -222,3 +218,193 @@ def test_get_longst_strike_daily_3_and_4_group():
     expected = {"max_strike_times": 3 , "max_date": h1_event10.created_at.date(), "min_date": h1_event8.created_at.date()}
     data = get_longest_strike(h1, event_list)
     assert expected == data
+
+#################################### weekly #########################################################################################
+
+
+def test_get_longest_strike_weekly_all_chekced():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+    ts1 = datetime.datetime(2024,11,1)
+    ts2 = datetime.datetime(2024,11,7)
+    ts3 = datetime.datetime(2024,11,13)
+    ts4 = datetime.datetime(2024,11,21)
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    event_list = [h1_event1, h1_event2, h1_event4, h1_event3]
+    expected = {"max_strike_times": 4 , "max_date": h1_event4.created_at.date(), "min_date": h1_event1.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+def test_get_longest_strike_weekly_non_chekced():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+    data = get_longest_strike(h1, [])
+    assert data is None
+
+def test_get_longst_strike_weekly_1_group():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+
+    ts1 = datetime.datetime(2024,11,1)
+    ts2 = datetime.datetime(2024,11,9)
+    ts3 = datetime.datetime(2024,11,14) # stike 3
+    ts4 = datetime.datetime(2024,11,25)
+    ts5 = datetime.datetime(2024,12,9)
+    ts6 = datetime.datetime(2024,12,17)
+    ts7 = datetime.datetime(2024,12,12)
+    ts8 = datetime.datetime(2024,12,30)
+    ts9 = datetime.datetime(2024,12,31)
+    ts10 = datetime.datetime(2025,1,20)
+
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event5 = HabitEventDB(uuid='uuid1', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event6 = HabitEventDB(uuid='uuid1', created_at=ts6, event_year=ts6.year, week_nb=ts6.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event7 = HabitEventDB(uuid='uuid1', created_at=ts7, event_year=ts7.year, week_nb=ts7.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event8 = HabitEventDB(uuid='uuid1', created_at=ts8, event_year=ts8.year, week_nb=ts8.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event9 = HabitEventDB(uuid='uuid1', created_at=ts9, event_year=ts9.year, week_nb=ts9.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event10 = HabitEventDB(uuid='uuid1', created_at=ts10, event_year=ts10.year, week_nb=ts10.strftime("%V"), habit_uuid=h1.uuid)
+    
+    event_list = [h1_event10, h1_event9, h1_event8, h1_event7, h1_event6, h1_event5, h1_event4, h1_event3, h1_event2, h1_event1]
+    expected = {"max_strike_times": 3 , "max_date": h1_event3.created_at.date(), "min_date": h1_event1.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+def test_get_longst_strike_weekly_2_group():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+
+    ts1 = datetime.datetime(2024,10,1)
+    ts2 = datetime.datetime(2024,10,15)
+    ts3 = datetime.datetime(2024,10,29) #start strike
+    ts4 = datetime.datetime(2024,11,29)
+    ts5 = datetime.datetime(2024,11,5)
+    ts6 = datetime.datetime(2024,11,14) #strike end
+    ts7 = datetime.datetime(2024,11,26)
+    ts8 = datetime.datetime(2024,12,3)
+    ts9 = datetime.datetime(2024,12,20)
+    ts10 = datetime.datetime(2024,12,31)
+
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event5 = HabitEventDB(uuid='uuid1', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event6 = HabitEventDB(uuid='uuid1', created_at=ts6, event_year=ts6.year, week_nb=ts6.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event7 = HabitEventDB(uuid='uuid1', created_at=ts7, event_year=ts7.year, week_nb=ts7.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event8 = HabitEventDB(uuid='uuid1', created_at=ts8, event_year=ts8.year, week_nb=ts8.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event9 = HabitEventDB(uuid='uuid1', created_at=ts9, event_year=ts9.year, week_nb=ts9.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event10 = HabitEventDB(uuid='uuid1', created_at=ts10, event_year=ts10.year, week_nb=ts10.strftime("%V"), habit_uuid=h1.uuid)
+    
+    event_list = [h1_event10, h1_event9, h1_event8, h1_event7, h1_event6, h1_event5, h1_event4, h1_event3, h1_event2, h1_event1]
+    expected = {"max_strike_times": 3, "max_date": h1_event6.created_at.date(), "min_date": h1_event3.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+def test_get_longst_strike_weekly_3_group():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+
+    ts1 = datetime.datetime(2024,9,1)
+    ts2 = datetime.datetime(2024,9,12)
+    ts3 = datetime.datetime(2024,9,16)
+    ts4 = datetime.datetime(2024,9,30) # strike start
+    ts5 = datetime.datetime(2024,10,10)
+    ts6 = datetime.datetime(2024,10,19)
+    ts7 = datetime.datetime(2024,10,22) # strike end
+    ts8 = datetime.datetime(2024,11,14)
+    ts9 = datetime.datetime(2024,11,15)
+    ts10 = datetime.datetime(2024,11,20)
+
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event5 = HabitEventDB(uuid='uuid1', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event6 = HabitEventDB(uuid='uuid1', created_at=ts6, event_year=ts6.year, week_nb=ts6.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event7 = HabitEventDB(uuid='uuid1', created_at=ts7, event_year=ts7.year, week_nb=ts7.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event8 = HabitEventDB(uuid='uuid1', created_at=ts8, event_year=ts8.year, week_nb=ts8.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event9 = HabitEventDB(uuid='uuid1', created_at=ts9, event_year=ts9.year, week_nb=ts9.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event10 = HabitEventDB(uuid='uuid1', created_at=ts10, event_year=ts10.year, week_nb=ts10.strftime("%V"), habit_uuid=h1.uuid)
+    
+    event_list = [h1_event10, h1_event9, h1_event8, h1_event7, h1_event6, h1_event5, h1_event4, h1_event3, h1_event2, h1_event1]
+    expected = {"max_strike_times": 4 , "max_date": h1_event7.created_at.date(), "min_date": h1_event4.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+def test_get_longst_strike_weekly_4_group():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+
+    ts1 = datetime.datetime(2024,10,3)
+    ts2 = datetime.datetime(2024,10,17)
+    ts3 = datetime.datetime(2024,11,7)
+    ts4 = datetime.datetime(2024,11,14)
+    ts5 = datetime.datetime(2024,11,7)
+    ts6 = datetime.datetime(2024,11,27)
+    ts7 = datetime.datetime(2024,12,4)
+    ts8 = datetime.datetime(2024,12,18) # strike start
+    ts9 = datetime.datetime(2024,12,25)
+    ts10 = datetime.datetime(2024,12,31) #strike end
+
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event5 = HabitEventDB(uuid='uuid1', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event6 = HabitEventDB(uuid='uuid1', created_at=ts6, event_year=ts6.year, week_nb=ts6.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event7 = HabitEventDB(uuid='uuid1', created_at=ts7, event_year=ts7.year, week_nb=ts7.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event8 = HabitEventDB(uuid='uuid1', created_at=ts8, event_year=ts8.year, week_nb=ts8.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event9 = HabitEventDB(uuid='uuid1', created_at=ts9, event_year=ts9.year, week_nb=ts9.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event10 = HabitEventDB(uuid='uuid1', created_at=ts10, event_year=ts10.year, week_nb=ts10.strftime("%V"), habit_uuid=h1.uuid)
+    
+    event_list = [h1_event10, h1_event9, h1_event8, h1_event7, h1_event6, h1_event5, h1_event4, h1_event3, h1_event2, h1_event1]
+    expected = {"max_strike_times": 3 , "max_date": h1_event10.created_at.date(), "min_date": h1_event8.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+def test_get_longst_strike_weekly_3_and_4_group():
+    h1 = Habit('test_uuid1', 'test_name1', 'weekly', created_at=datetime.datetime.now())
+
+    ts1 = datetime.datetime(2024,10,1)
+    ts2 = datetime.datetime(2024,10,10)
+    ts3 = datetime.datetime(2024,10,24)
+    ts4 = datetime.datetime(2024,10,31)
+    ts5 = datetime.datetime(2024,11,15) # strike 1 start
+    ts6 = datetime.datetime(2024,11,20)
+    ts7 = datetime.datetime(2024,11,30) # strike 1 end
+    ts8 = datetime.datetime(2024,12,15) # strike2 start
+    ts9 = datetime.datetime(2024,12,16)
+    ts10 = datetime.datetime(2024,12,28) # strike2 ends
+
+    h1_event1 = HabitEventDB(uuid='uuid1', created_at=ts1, event_year=ts1.year, week_nb=ts1.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event2 = HabitEventDB(uuid='uuid1', created_at=ts2, event_year=ts2.year, week_nb=ts2.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event3 = HabitEventDB(uuid='uuid1', created_at=ts3, event_year=ts3.year, week_nb=ts3.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event4 = HabitEventDB(uuid='uuid1', created_at=ts4, event_year=ts4.year, week_nb=ts4.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event5 = HabitEventDB(uuid='uuid1', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event6 = HabitEventDB(uuid='uuid1', created_at=ts6, event_year=ts6.year, week_nb=ts6.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event7 = HabitEventDB(uuid='uuid1', created_at=ts7, event_year=ts7.year, week_nb=ts7.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event8 = HabitEventDB(uuid='uuid1', created_at=ts8, event_year=ts8.year, week_nb=ts8.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event9 = HabitEventDB(uuid='uuid1', created_at=ts9, event_year=ts9.year, week_nb=ts9.strftime("%V"), habit_uuid=h1.uuid)
+    h1_event10 = HabitEventDB(uuid='uuid1', created_at=ts10, event_year=ts10.year, week_nb=ts10.strftime("%V"), habit_uuid=h1.uuid)
+    
+    event_list = [h1_event10, h1_event9, h1_event8, h1_event7, h1_event6, h1_event5, h1_event4, h1_event3, h1_event2, h1_event1]
+    expected = {"max_strike_times": 3 , "max_date": h1_event10.created_at.date(), "min_date": h1_event8.created_at.date()}
+    data = get_longest_strike(h1, event_list)
+    assert expected == data
+
+# def test_max_min_week_dates():
+#     test_date = datetime.date(2024,11,27) 
+#     expected = {"max": datetime.date(2024,12,1), "min": datetime.date(2024,11,25)}
+#     data = max_min_date_for_week(test_date)
+    
+#     test_date2 = datetime.date(2024,11,4)
+#     expected2 = {"max": datetime.date(2024,11,10), "min": datetime.date(2024,11,4)}
+#     data2 = max_min_date_for_week(test_date2)
+    
+#     test_date3 = datetime.date(2024,10,6)
+#     expected3 = {"max": datetime.date(2024,10,6), "min": datetime.date(2024,9,30)}
+#     data3 = max_min_date_for_week(test_date3)
+    
+#     assert expected == data
+#     assert expected2 == data2
+#     assert expected3 == data3
