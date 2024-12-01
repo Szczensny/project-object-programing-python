@@ -17,7 +17,7 @@ def get_all_habits_tracked_frequency(habit_list:List[Habit], frequency:str) -> L
     result = [{habit.name: habit.uuid} for habit in habit_list if habit.frequency == frequency]
     return result 
 
-def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
+def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[HabitEventDB]]:
     if habit.frequency == 'daily':
         max_diff_days = 1
     elif habit.frequency == 'weekly':
@@ -53,13 +53,19 @@ def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
             groups.append(temp_group)
             temp_group = []
             temp_group.append(date)
-    strike_conter = [len(group) for group in groups]
+    return groups
+
+def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
+    all_strikes = get_all_strikes(habit, habit_events)
+    if all_strikes is None:
+        return None
+    strike_conter = [len(group) for group in all_strikes]
     max_strike = max(strike_conter)
     max_strike_pos = 0
     for i, value in enumerate(strike_conter):
         if value == max_strike and i > max_strike_pos:
             max_strike_pos = i
-    min_date, max_date = groups[max_strike_pos][0], groups[max_strike_pos][-1]
+    min_date, max_date = all_strikes[max_strike_pos][0], all_strikes[max_strike_pos][-1]
     return {"max_strike_times": max_strike , "max_date": max_date, "min_date": min_date}
 
 
@@ -73,3 +79,11 @@ def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB
                              "min": longest_strike["min_date"]})
     biggest_strike = max(strike_list, key=lambda row: (row['strike'], row['max']) )
     return biggest_strike
+
+def get_last_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
+    all_strikes = get_all_strikes(habit, habit_events)
+    if all_strikes is None:
+        return None
+    result = {"strike": len(all_strikes[-1]), "max": all_strikes[-1][-1] , "min": all_strikes[-1][0]}
+    logging.warning(result)
+    return result
