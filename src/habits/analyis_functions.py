@@ -1,11 +1,8 @@
 from habits.habit import Habit
 from habits.db_models import HabitEventDB
-from typing import List, Dict
+from typing import List, Dict, Set, Tuple
 import logging
 import datetime
-
-# return the longest run streak of all defined habits,
-# and return the longest run streak for a given habit.
 
 def max_min_date_for_week(date:datetime.date) -> Dict:
     monday = date - datetime.timedelta(days=date.weekday())
@@ -65,3 +62,14 @@ def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
     min_date, max_date = groups[max_strike_pos][0], groups[max_strike_pos][-1]
     return {"max_strike_times": max_strike , "max_date": max_date, "min_date": min_date}
 
+
+def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB]]]) -> dict:
+    strike_list = []
+    for habit in habits:
+        longest_strike = get_longest_strike(habit[0], habit[1])
+        strike_list.append({"habit_name": habit[0].name,
+                             "strike": longest_strike['max_strike_times'],
+                             "max": longest_strike['max_date'],
+                             "min": longest_strike["min_date"]})
+    biggest_strike = max(strike_list, key=lambda row: (row['strike'], row['max']) )
+    return biggest_strike
