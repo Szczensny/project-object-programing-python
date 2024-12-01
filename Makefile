@@ -9,7 +9,7 @@ run:
 	python src/home.py
 
 run_web:
-	streamlit run src/home.py
+	streamlit run src/home.py --server.port 8080
 
 test_run:
 	python src/db_init.py
