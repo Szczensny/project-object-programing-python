@@ -1,0 +1,6 @@
+[run]
+omit =
+    src/pages/*
+    src/home.py
+    src/main.py
+    __init__.py
