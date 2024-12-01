@@ -3,7 +3,7 @@ import datetime
 from habits.db_models import HabitDB, HabitEventDB
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound 
-from sqlalchemy import select
+from sqlalchemy import select, cast, Date
 from typing import Union, List
 from uuid import uuid4
 import logging
@@ -59,11 +59,21 @@ class Habit():
         self.name = name
 
     def delete_habit(self, session:Session) -> None:
+        session.query(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).delete()
         session.query(HabitDB).filter(HabitDB.uuid == self.uuid).delete()
         session.commit()
 
+    def get_habit_event_by_date(self, session:Session, date:datetime.date) -> HabitEventDB:
+        try:
+            result = session.query(HabitEventDB).filter(cast(HabitEventDB.created_at, Date)== date).filter(HabitEventDB.habit_uuid==self.uuid).one()
+            return result
+        except NoResultFound:
+            return None
+
     def create_habit_event(self, session:Session, event_ts:datetime.datetime=None) -> HabitEventDB:
         current_ts = datetime.datetime.now() if event_ts is None else event_ts
+        if self.get_habit_event_by_date(session, current_ts.date()) is not None:
+            raise ValueError('Habit event for that day is already existing!')
         new_habbit_event = HabitEventDB(uuid=str(uuid4()), created_at=current_ts, event_year=current_ts.year, week_nb=current_ts.strftime("%V"), habit_uuid=self.uuid)
         session.add(new_habbit_event)
         session.commit()
@@ -75,6 +85,7 @@ class Habit():
             return result
         except NoResultFound:
             return None
+    
     def get_habit_events(self, session:Session, from_date:datetime.datetime=None, from_week_nb:int=None, year:int=None) -> List[HabitEventDB]:
         if from_date is not None and from_week_nb is not None:
             raise ValueError('You can choose only from_date or from_week_nb as fiter')

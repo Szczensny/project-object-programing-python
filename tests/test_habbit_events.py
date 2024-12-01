@@ -24,6 +24,11 @@ def test_habbit_event_creation():
     h1 = Habit.create_habbit(ms_session, 'test_uuid', 'test_habbit1', 'daily')
     he1 = h1.create_habit_event(ms_session)
     db_event = h1.get_habit_event_by_uuid(session=ms_session, habit_event_uuid=he1.uuid)
+    try:
+        he2 = h1.create_habit_event(ms_session)
+        assert False
+    except ValueError:
+        assert True
     assert h1.uuid == db_event.habit_uuid
     assert db_event.created_at > current_time
 
