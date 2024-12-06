@@ -3,7 +3,10 @@ import os
 from unittest import mock
 from sqlalchemy import text
 
-mst = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
+if os.getenv('DOCKER_TESTS') == 'True':
+    mst = MySQLUtil()
+else:
+    mst = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
 
 def test_db_object_setup_correct():
     ms = MySQLUtil('localhost', '5555', 'example_user', 'example_passowrd', 'example_db')

@@ -10,4 +10,22 @@ services:
       MYSQL_PASSWORD: test
     ports:
       - 3307:3306
-    
+    healthcheck:
+      test: mysql -u testuser -ptest -e 'show databases;'
+      timeout: 10s
+      retries: 10
+  test-container:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    restart: no
+    environment:
+      - MYSQL_HOST=db-test
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=testuser
+      - MYSQL_PASSWORD=test
+      - MYSQL_DB_NAME=testdb
+      - DOCKER_TESTS=True
+    depends_on:
+      db-test:
+        condition: service_healthy

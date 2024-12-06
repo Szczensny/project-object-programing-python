@@ -1,0 +1,9 @@
+FROM python:3.10
+
+RUN apt-get update && apt-get install make -y
+RUN mkdir /app
+WORKDIR /app
+COPY . /app/
+RUN pip install -r requirements_dev.txt
+
+ENTRYPOINT [ "./entrypoint_tests.sh" ]

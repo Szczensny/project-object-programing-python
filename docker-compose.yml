@@ -17,7 +17,9 @@ services:
       timeout: 10s
       retries: 10
   webapp:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     environment:
       - MYSQL_HOST=db

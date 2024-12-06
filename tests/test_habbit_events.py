@@ -4,8 +4,12 @@ import datetime
 from time import sleep
 from habits.db_models import BASE, HabitDB, HabitEventDB
 import logging
+import os
 
-ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
+if os.getenv('DOCKER_TESTS') == 'True':
+    ms = MySQLUtil()
+else:
+    ms = MySQLUtil('localhost', 3307, 'testuser', 'test', 'testdb')
 ms_session = ms.get_session()
 engine = ms.get_engine()
 
