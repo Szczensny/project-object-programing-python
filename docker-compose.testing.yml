@@ -1,6 +1,6 @@
 services:
 
-  db-test:
+  db_test:
     image: mysql:9.1
     restart: always
     environment:
@@ -20,12 +20,12 @@ services:
       dockerfile: Dockerfile.test
     restart: no
     environment:
-      - MYSQL_HOST=db-test
+      - MYSQL_HOST=db_test
       - MYSQL_PORT=3306
       - MYSQL_USERNAME=testuser
       - MYSQL_PASSWORD=test
       - MYSQL_DB_NAME=testdb
       - DOCKER_TESTS=True
     depends_on:
-      db-test:
+      db_test:
         condition: service_healthy

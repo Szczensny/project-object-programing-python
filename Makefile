@@ -15,13 +15,13 @@ test_run:
 	python src/db_init.py
 
 start_db:
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.yml up -d db
 
 stop_db:
 	docker-compose -f docker-compose.yml down
 
 start_test_db:
-	docker-compose -f docker-compose.testing.yml up -d
+	docker-compose -f docker-compose.testing.yml up -d db_test
 
 stop_test_db:
 	docker-compose -f docker-compose.testing.yml down
