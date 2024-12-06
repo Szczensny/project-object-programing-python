@@ -8,8 +8,25 @@ services:
       MYSQL_DATABASE: habbitapp
       MYSQL_USER: example
       MYSQL_PASSWORD: test
-    volumes:
-      - ./mysql_data:/var/lib/mysql
+    #volumes:
+    #  - ./mysql_data:/var/lib/mysql
     ports:
       - 3306:3306
-    
+    healthcheck:
+      test: mysql -u example -ptest -e 'show databases;'
+      timeout: 10s
+      retries: 10
+  webapp:
+    build: .
+    restart: always
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=example
+      - MYSQL_PASSWORD=test
+      - MYSQL_DB_NAME=habbitapp
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8080:8080

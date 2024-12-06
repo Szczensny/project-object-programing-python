@@ -72,7 +72,7 @@ elif select_frequency == 'Daily':
 elif select_frequency == 'Weekly':
      data = [habit for habit in habits if habit.frequency == 'weekly']
 
-add_button = st.button('Edit', key=f'add_habit', on_click=add_habit)
+add_button = st.button('Add Habit', key=f'add_habit', on_click=add_habit)
 
 with st.container():
     col1, col2, col3, col4, col5 = st.columns(5)
