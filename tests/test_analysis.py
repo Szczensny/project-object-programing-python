@@ -1,6 +1,6 @@
 from habits.habit import Habit
 from habits.analyis_functions import get_all_habits_tracked, get_all_habits_tracked_frequency, get_longest_strike, max_min_date_for_week, get_longest_strike_for_all_habits
-from habits.analyis_functions import get_longest_strike, max_min_date_for_week, get_longest_strike_for_all_habits, get_last_strike
+from habits.analyis_functions import get_longest_strike, max_min_date_for_week, get_longest_strike_for_all_habits, get_last_strike, get_all_habits_counter
 from habits.db_models import HabitEventDB
 import datetime 
 
@@ -12,11 +12,11 @@ def test_get_all_habbits_tracked():
     h5 = Habit('test_uuid5', 'test_name5', 'daily', created_at=datetime.datetime.now())
     habit_list = [h1, h2, h3, h4, h5]
     expected = [
-        {'test_name1': 'test_uuid1'},
-        {'test_name2': 'test_uuid2'},
-        {'test_name3': 'test_uuid3'},
-        {'test_name4': 'test_uuid4'},
-        {'test_name5': 'test_uuid5'},
+        {'test_name1': 'test_uuid1', "obj": h1},
+        {'test_name2': 'test_uuid2', "obj": h2},
+        {'test_name3': 'test_uuid3', "obj": h3},
+        {'test_name4': 'test_uuid4', "obj": h4},
+        {'test_name5': 'test_uuid5', "obj": h5},
     ]
     
     data = get_all_habits_tracked(habit_list)
@@ -31,16 +31,8 @@ def test_get_all_habbits_frequency():
     h5 = Habit('test_uuid5', 'test_name5', 'daily', created_at=datetime.datetime.now())
     habit_list = [h1, h2, h3, h4, h5]
     
-    expected = [
-        {'test_name1': 'test_uuid1'},
-        {'test_name2': 'test_uuid2'},
-        {'test_name5': 'test_uuid5'},
-    ]
-
-    expected2 = [
-        {'test_name3': 'test_uuid3'},
-        {'test_name4': 'test_uuid4'},
-    ]
+    expected = [h1, h2, h5]
+    expected2 = [h3, h4]
     
     data1 = get_all_habits_tracked_frequency(habit_list, 'daily')
     data2 = get_all_habits_tracked_frequency(habit_list, 'weekly')
@@ -448,7 +440,10 @@ def test_longest_strike_habbits():
     h3_event5 = HabitEventDB(uuid='uuid3', created_at=ts5, event_year=ts5.year, week_nb=ts5.strftime("%V"), habit_uuid=h1.uuid)
     habit3_tuple = (h3, [h3_event1, h3_event3, h3_event2, h3_event4, h3_event5])
 
-    data = get_longest_strike_for_all_habits([habit1_tuple, habit2_tuple, habit3_tuple])
+    h31 = Habit('test_uuid31', 'test_name31', 'daily', created_at=datetime.datetime.now())
+    h31_tuple = (h31, [])
+
+    data = get_longest_strike_for_all_habits([habit1_tuple, habit2_tuple, habit3_tuple, h31_tuple])
     expected = {"habit_name": 'test_name2', "strike": 5 , "max": h2_event5.created_at.date(), "min": h2_event1.created_at.date()}
     assert data == expected
 
@@ -492,3 +487,16 @@ def test_get_last_strike():
     assert data_1 == expected_habit1
     assert data_2 == expected_habit2
     assert data_3 == expected_habit3
+
+def test_get_all_habits_counter():
+    h1 = Habit('test_uuid1', 'test_name1', 'daily', created_at=datetime.datetime.now())
+    h2 = Habit('test_uuid2', 'test_name2', 'daily', created_at=datetime.datetime.now())
+    h3 = Habit('test_uuid3', 'test_name3', 'weekly', created_at=datetime.datetime.now())
+    h4 = Habit('test_uuid4', 'test_name4', 'weekly', created_at=datetime.datetime.now())
+    h5 = Habit('test_uuid5', 'test_name5', 'daily', created_at=datetime.datetime.now())
+
+    habit_list = [h1, h2, h3, h4, h5]
+    expect = {"daily": 3, "weekly":2}
+    data = get_all_habits_counter(habit_list)
+
+    assert expect == data
