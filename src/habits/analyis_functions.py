@@ -10,11 +10,22 @@ def max_min_date_for_week(date:datetime.date) -> Dict:
     return {"max": sunday, "min": monday}
 
 def get_all_habits_tracked(habit_list:List[Habit]) -> List[Dict]:
-    result = [{habit.name: habit.uuid} for habit in habit_list]
+    result = [{habit.name: habit.uuid, "obj": habit} for habit in habit_list]
     return result 
 
-def get_all_habits_tracked_frequency(habit_list:List[Habit], frequency:str) -> List[Dict]:
-    result = [{habit.name: habit.uuid} for habit in habit_list if habit.frequency == frequency]
+def get_all_habits_counter(habit_list:List[Habit]) -> Dict:
+    counter_daily = 0
+    counter_weekly = 0
+    for habit in habit_list:
+        if habit.frequency == 'daily':
+            counter_daily +=1
+        elif habit.frequency == 'weekly':
+            counter_weekly +=1
+    
+    return {"daily": counter_daily, "weekly":counter_weekly}
+
+def get_all_habits_tracked_frequency(habit_list:List[Habit], frequency:str) -> List[Habit]:
+    result = [habit for habit in habit_list if habit.frequency == frequency]
     return result 
 
 def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[HabitEventDB]]:
@@ -57,7 +68,7 @@ def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[H
 
 def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
     all_strikes = get_all_strikes(habit, habit_events)
-    if all_strikes is None:
+    if all_strikes is None or len(all_strikes)==0:
         return None
     strike_conter = [len(group) for group in all_strikes]
     max_strike = max(strike_conter)
@@ -73,6 +84,8 @@ def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB
     strike_list = []
     for habit in habits:
         longest_strike = get_longest_strike(habit[0], habit[1])
+        if longest_strike is None:
+            continue
         strike_list.append({"habit_name": habit[0].name,
                              "strike": longest_strike['max_strike_times'],
                              "max": longest_strike['max_date'],
@@ -82,8 +95,9 @@ def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB
 
 def get_last_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
     all_strikes = get_all_strikes(habit, habit_events)
-    if all_strikes is None:
+    if all_strikes is None or len(all_strikes)==0:
         return None
+    logging.warning(all_strikes)
     result = {"strike": len(all_strikes[-1]), "max": all_strikes[-1][-1] , "min": all_strikes[-1][0]}
     logging.warning(result)
     return result

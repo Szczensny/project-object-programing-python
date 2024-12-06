@@ -52,20 +52,21 @@ elif select_frequency == 'Weekly':
      data = [habit for habit in habits if habit.frequency == 'weekly']
 
 with st.container():
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     col1.write('Habit name')
     col2.write('Habit frequency')
-    col3.write('')
+    col3.write('Created at')
     col4.write('')
+    col5.empty()
 st.empty()
 for habit in data:
     with st.container(border=True):
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
         col1.write(habit.name)
         col2.write(habit.frequency)
-        col3.empty()
-        with col3:
-            edit = st.button('Edit', key=f'edit_{habit.uuid}', on_click=edit, args=[habit])
+        col3.write(habit.created_at)
         with col4:
-            delete = st.button('delete',key=f'delete_{habit.uuid}', on_click=delete, args=[habit])
+            edit_button = st.button('Edit', key=f'edit_{habit.uuid}', on_click=edit, args=[habit])
+        with col5:
+            delete_buttpm = st.button('delete',key=f'delete_{habit.uuid}', on_click=delete, args=[habit])
 

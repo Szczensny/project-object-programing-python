@@ -3,7 +3,7 @@ import datetime
 from habits.db_models import HabitDB, HabitEventDB
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound 
-from sqlalchemy import select, cast, Date
+from sqlalchemy import select, cast, Date, desc
 from typing import Union, List
 from uuid import uuid4
 import logging
@@ -39,7 +39,7 @@ class Habit():
     
     @staticmethod
     def get_all_habits(session:Session) -> List[Habit]:
-        result = session.query(HabitDB).all()
+        result = session.query(HabitDB).order_by(desc(HabitDB.created_at)).all()
         habits = []
         for row in result:
             habits.append(Habit(row.uuid, row.name, row.frequency, row.created_at))
@@ -98,13 +98,13 @@ class Habit():
             raise ValueError('You can choose only from_date or from_week_nb as fiter')
         
         if from_date is not None:
-            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.created_at >= from_date)
+            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.created_at >= from_date).order_by(desc(HabitEventDB.created_at))
         elif from_week_nb is not None:
             year = year if year is not None else datetime.datetime.now().year
             logging.warning(year)
-            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.week_nb >= from_week_nb).filter(HabitEventDB.event_year == year)
+            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.week_nb >= from_week_nb).filter(HabitEventDB.event_year == year).order_by(desc(HabitEventDB.created_at))
         else:
-            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid)
+            statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).order_by(desc(HabitEventDB.created_at))
         result = session.execute(statement=statement).all()
         return [item[0] for item in result]
     

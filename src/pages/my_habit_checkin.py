@@ -43,8 +43,14 @@ habit_events = habit.get_habit_events(ms)
 st.empty()
 add_new_event = st.button('Add new event')
 if add_new_event:
-    habit.create_habit_event(ms)
-    st.rerun()
+    try:
+        habit.create_habit_event(ms)
+        info = st.success('Added habit event!')
+    except ValueError:
+        info = st.error('Cannot add event as one exist for today already!')
+    finally:
+        time.sleep(2)
+        st.rerun()
 
 st.empty()
 
