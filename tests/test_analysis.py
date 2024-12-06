@@ -486,11 +486,8 @@ def test_get_last_strike():
 
     data_1 = get_last_strike(h1, habit1_list)
     import logging
-    logging.warning(expected_habit1)
     data_2 = get_last_strike(h2, habit2_list)
-    logging.warning(expected_habit2)
     data_3 = get_last_strike(h3, habit3_list)
-    logging.warning(expected_habit3)
 
     assert data_1 == expected_habit1
     assert data_2 == expected_habit2

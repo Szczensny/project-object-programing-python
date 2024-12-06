@@ -12,10 +12,8 @@ engine = ms.get_engine()
 BASE.metadata.create_all(engine)
 
 def recreate_tables():
-    logging.warning('deleting tables')
     ms.execute_raw_query('delete from HABIT_EVENT where 1=1;')
     ms.execute_raw_query('delete from HABIT where 1=1;')
-    logging.warning('deleting tables complete')
 
 
 def test_habbit_creation():

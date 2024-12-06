@@ -101,7 +101,6 @@ class Habit():
             statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.created_at >= from_date).order_by(desc(HabitEventDB.created_at))
         elif from_week_nb is not None:
             year = year if year is not None else datetime.datetime.now().year
-            logging.warning(year)
             statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).filter(HabitEventDB.week_nb >= from_week_nb).filter(HabitEventDB.event_year == year).order_by(desc(HabitEventDB.created_at))
         else:
             statement = select(HabitEventDB).filter(HabitEventDB.habit_uuid == self.uuid).order_by(desc(HabitEventDB.created_at))

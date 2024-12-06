@@ -97,7 +97,5 @@ def get_last_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
     all_strikes = get_all_strikes(habit, habit_events)
     if all_strikes is None or len(all_strikes)==0:
         return None
-    logging.warning(all_strikes)
     result = {"strike": len(all_strikes[-1]), "max": all_strikes[-1][-1] , "min": all_strikes[-1][0]}
-    logging.warning(result)
     return result

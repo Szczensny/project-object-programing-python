@@ -7,6 +7,7 @@ from habits import analyis_functions as af
 ms = MySQLUtil().get_session()
 
 
+
 habits = Habit.get_all_habits(ms)
 habits_with_events = []
 

@@ -2,7 +2,28 @@ import streamlit as st
 from utils.mysql_util import MySQLUtil
 from habits.habit import Habit
 import time
+from uuid import uuid4
 ms = MySQLUtil().get_session()
+
+@st.dialog("add habit", width='large')
+def add_habit():
+    name = st.text_input('Habbit name')
+    frequency = st.selectbox('Frequency', ['daily', 'weekly'])
+    submit_button = st.button('Add habit')
+    if submit_button:
+        try:
+            Habit.create_habbit(
+                session=ms,
+                uuid=str(uuid4()),
+                name=name,
+                frequency=frequency
+            )
+            st.success('Habbit has been added')
+        except ValueError:
+            st.error(f'Habit with name: {name} is already existing!')
+        finally:
+            time.sleep(2)
+            st.rerun()
 
 @st.dialog("edit habit", width='large')
 def edit(habit:Habit):
@@ -50,6 +71,8 @@ elif select_frequency == 'Daily':
     data = [habit for habit in habits if habit.frequency == 'daily']
 elif select_frequency == 'Weekly':
      data = [habit for habit in habits if habit.frequency == 'weekly']
+
+add_button = st.button('Edit', key=f'add_habit', on_click=add_habit)
 
 with st.container():
     col1, col2, col3, col4, col5 = st.columns(5)

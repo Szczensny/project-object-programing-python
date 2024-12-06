@@ -5,7 +5,8 @@ from habits.db_models import HabitEventDB
 import time
 
 ms = MySQLUtil().get_session()
-st.title = 'My habits checkin'
+
+
 
 @st.dialog("delete habit", width='large')
 def delete(habit:Habit, habit_event:HabitEventDB):
