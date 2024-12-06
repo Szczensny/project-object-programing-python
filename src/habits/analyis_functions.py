@@ -1,19 +1,42 @@
 from habits.habit import Habit
 from habits.db_models import HabitEventDB
-from typing import List, Dict, Set, Tuple
-import logging
+from typing import List, Dict, Tuple
 import datetime
 
 def max_min_date_for_week(date:datetime.date) -> Dict:
+    """Function generates dates of monday and sunday of the same week as input date
+
+    Args:
+        date (datetime.date): date of intrest
+
+    Returns:
+        Dict:{"max": <sunday date>, "min": <monday date>}
+    """
     monday = date - datetime.timedelta(days=date.weekday())
     sunday = date + datetime.timedelta(days=(6 - date.weekday()))
     return {"max": sunday, "min": monday}
 
 def get_all_habits_tracked(habit_list:List[Habit]) -> List[Dict]:
+    """generates list of dictionaris containing habits uuids with objects
+
+    Args:
+        habit_list (List[Habit]): List of habit objects
+
+    Returns:
+        List[Dict]: [{"uuuid": <UUID>, "obj": <habit object>}]
+    """
     result = [{habit.name: habit.uuid, "obj": habit} for habit in habit_list]
     return result 
 
 def get_all_habits_counter(habit_list:List[Habit]) -> Dict:
+    """ Counts amount of daily and weekly habits and retruns values as dictionary
+
+    Args:
+        habit_list (List[Habit]): List of Habits objects in intrest
+
+    Returns:
+        Dict:{"daily": <daily habits count>, "weekly": <weekly habits count>}
+    """
     counter_daily = 0
     counter_weekly = 0
     for habit in habit_list:
@@ -25,10 +48,29 @@ def get_all_habits_counter(habit_list:List[Habit]) -> Dict:
     return {"daily": counter_daily, "weekly":counter_weekly}
 
 def get_all_habits_tracked_frequency(habit_list:List[Habit], frequency:str) -> List[Habit]:
+    """Returns the list of habits with choosen frequency
+
+    Args:
+        habit_list (List[Habit]): List of habits in intrest
+        frequency (str): name of the frequency 
+
+    Returns:
+        List[Habit]: list of habits object after filtration. If no match fund return empty list
+    """
     result = [habit for habit in habit_list if habit.frequency == frequency]
     return result 
 
-def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[HabitEventDB]]:
+def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[HabitEventDB]] | None:
+    """Counts the amount of strikes (count of situation when events happend in succesive order)
+
+
+    Args:
+        habit (Habit): Habit object
+        habit_events (List[HabitEventDB]): list of habits events to coresponding habit
+
+    Returns:
+        List[List[HabitEventDB]]: list containg groups of events that happend one after another. If no habit event is provided returns None
+    """
     if habit.frequency == 'daily':
         max_diff_days = 1
     elif habit.frequency == 'weekly':
@@ -66,7 +108,17 @@ def get_all_strikes(habit:Habit, habit_events:List[HabitEventDB]) -> List[List[H
             temp_group.append(date)
     return groups
 
-def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
+def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict | None:
+    """Generates the count of the longest strike for given habbit and its habits events
+
+    Args:
+        habit (Habit): Habit object in intrest
+        habit_events (List[HabitEventDB]): List of habits events that belong to habit
+
+    Returns:
+        Dict | None: {"max_strike_times": max_strike , "max_date": max_date, "min_date": min_date}
+        if event list is empty returns None
+    """
     all_strikes = get_all_strikes(habit, habit_events)
     if all_strikes is None or len(all_strikes)==0:
         return None
@@ -80,7 +132,19 @@ def get_longest_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
     return {"max_strike_times": max_strike , "max_date": max_date, "min_date": min_date}
 
 
-def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB]]]) -> dict:
+def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB]]]) -> dict | None:
+    """Restruns a longest strike for all given habits
+
+    Args:
+        habits (List[Tuple[Habit, List[HabitEventDB]]]): List of touples where each contain Habit object and list of coresponding habit events.
+
+    Returns:
+        dict | None: Returns dictionary wit information on the biggest strike. 
+                            {"habit_name": <value>,
+                             "strike": <value>,
+                             "max":<value>,
+                             "min": <value>}
+    """
     strike_list = []
     for habit in habits:
         longest_strike = get_longest_strike(habit[0], habit[1])
@@ -93,7 +157,17 @@ def get_longest_strike_for_all_habits(habits:List[Tuple[Habit, List[HabitEventDB
     biggest_strike = max(strike_list, key=lambda row: (row['strike'], row['max']) )
     return biggest_strike
 
-def get_last_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict:
+def get_last_strike(habit:Habit, habit_events:List[HabitEventDB]) -> Dict | None:
+    """Returns the last strike of given habit
+
+    Args:
+        habit (Habit): Habit object in intrest
+        habit_events (List[HabitEventDB]): List of coresponding habit events
+
+    Returns:
+        Dict | None: returns dictionary with data as example below. If list of habits is empty returns None
+        {"strike": <value>, "max":<value> , "min": <value>}
+    """
     all_strikes = get_all_strikes(habit, habit_events)
     if all_strikes is None or len(all_strikes)==0:
         return None

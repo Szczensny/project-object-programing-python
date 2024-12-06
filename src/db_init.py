@@ -8,7 +8,15 @@ from typing import List
 import os
 
 
-def is_table_existing(table_name):
+def is_table_existing(table_name:str) -> bool:
+    """Chekc if table with given name exist in the database
+
+    Args:
+        table_name (str): 
+
+    Returns:
+        bool: 
+    """
     logging.info(f'Checking existence of table {table_name}')
     query = f"select count(*) as nb_tables from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA='habbitapp' and TABLE_NAME='{table_name}';"
     result = ms.get_data(query)
@@ -19,14 +27,28 @@ def is_table_existing(table_name):
         logging.info(f'Table {table_name} does not exists.')
         return False
 
-def create_table(table_name:str):
+def create_table(table_name:str) -> None:
+    """Creates table with given name
+
+    Args:
+        table_name (str): 
+    """
     engine = ms.get_engine()
     if not is_table_existing(table_name):
         logging.info(f'Table {table_name} is not existing. creating.')
         BASE.metadata.tables[table_name].create(engine)
         logging.info(f'Table {table_name} has been created.')
 
-def create_habbit(habit_name, frequency) -> Habit:
+def create_habbit(habit_name:str, frequency:str) -> Habit:
+    """Create habit with given name and frequency
+
+    Args:
+        habit_name (str): 
+        frequency (str): 
+
+    Returns:
+        Habit: 
+    """
     session = ms.get_session()
     if not Habit.is_habit_existing(session, habit_name):
         h1 = Habit.create_habbit(session, uuid=str(uuid4()), name=habit_name, frequency=frequency)
@@ -36,6 +58,12 @@ def create_habbit(habit_name, frequency) -> Habit:
     return h1
 
 def create_habit_events(habit:Habit, event_times:List[datetime.datetime]) -> None:
+    """Creates entries in database for given habit events
+
+    Args:
+        habit (Habit): 
+        event_times (List[datetime.datetime]): 
+    """
     session = ms.get_session()
     existing_list = habit.get_habit_events(session)
     if len(existing_list) == 0:
@@ -47,6 +75,8 @@ def create_habit_events(habit:Habit, event_times:List[datetime.datetime]) -> Non
             habit.create_habit_event(session, event)
 
 def execute():
+    """Main execution point of the script
+    """
     if not is_table_existing('HABIT'):
         create_table('HABIT')
 

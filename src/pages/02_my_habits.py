@@ -7,6 +7,8 @@ ms = MySQLUtil().get_session()
 
 @st.dialog("add habit", width='large')
 def add_habit():
+    """adds popup that allows to add habit to db
+    """
     name = st.text_input('Habbit name')
     frequency = st.selectbox('Frequency', ['daily', 'weekly'])
     submit_button = st.button('Add habit')
@@ -27,6 +29,11 @@ def add_habit():
 
 @st.dialog("edit habit", width='large')
 def edit(habit:Habit):
+    """adds popup that allows to edit habit name
+
+    Args:
+        habit (Habit): habit object in intrest
+    """
     with st.form(key='edit_habit'):
         st.write(habit.name)
         st.write(habit.uuid)
@@ -40,6 +47,11 @@ def edit(habit:Habit):
 
 @st.dialog("delete habit", width='large')
 def delete(habit:Habit):
+    """adds popup that allows to delete habit.
+
+    Args:
+        habit (Habit): habit object in intrest
+    """
     with st.form(key='edit_habit'):
         st.write(f'Are you sure that you want to delete habit: {habit.name}')
         delete_button = st.form_submit_button('Yes, please delete it.')

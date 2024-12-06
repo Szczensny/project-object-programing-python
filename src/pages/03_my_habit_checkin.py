@@ -10,6 +10,11 @@ ms = MySQLUtil().get_session()
 
 @st.dialog("delete habit", width='large')
 def delete(habit:Habit, habit_event:HabitEventDB):
+    """adds popup that allows to delete habit event.
+
+    Args:
+        habit (Habit): habit object in intrest
+    """
     with st.form(key='edit_habit'):
         st.write(f'Are you sure that you want to delete habit event?')
         delete_button = st.form_submit_button('Yes, please delete it.')
@@ -26,9 +31,6 @@ st.markdown("""
     }
     </style>
     """,unsafe_allow_html=True)
-
-def change_page():
-    st.switch_page('pages/analysis.py')
 
 habits = Habit.get_all_habits(ms)
 habits_list = [habit.name for habit in habits]

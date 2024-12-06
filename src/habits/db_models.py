@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship, declarative_base
 BASE = declarative_base()
 
 class HabitEventDB(BASE):
+    """class that holds DDL schema for table Habit event
+    """
     __tablename__ = 'HABIT_EVENT'
     uuid = Column(String(46), primary_key=True)
     created_at = Column(DateTime(), default=datetime.datetime.now)
@@ -13,6 +15,8 @@ class HabitEventDB(BASE):
     habit_uuid = Column(String(46), ForeignKey('HABIT.uuid'))
 
 class HabitDB(BASE):
+    """class that holds DDL schema for table habit
+    """
     __tablename__ = 'HABIT'
     uuid = Column(String(46), primary_key=True)
     created_at = Column(DateTime(), default=datetime.datetime.now)
