@@ -1,5 +1,7 @@
 # Habit app
 Habit app is a web based aplication that allows you to track your own habbits.
+
+![Application homescreen](img/home.png)
 The application comes with the example dataset for 4 weeks. 
 If you want to not load it - in file `docker-compose.yml` please uncoment line `30`.
 
@@ -70,6 +72,59 @@ docker-compose -f docker-compose.yml down
 
 ## Application usage
 
+### Home screen
+
+![Application homescreen](img/home.png)
+Home screen have a small welcome message and allows to navigate to different section of the app
+
+### My Habits
+![My Habits screen](img/habits.png)
+This section allows you to see details of the habits in the top slection box you can chose what kind of habits you want to see (all, daily, weekly).
+
+#### Creating Habit
+To add new habit you have to click on the button `Add habit`. The popup will show up:
+![Create habit](img/habits_create.png)
+
+Aftre filling in details and choosing the frequency of habit, click `Add habit` to save it in the database. 
+Importnat is that name of the habit has to be unique. If habit with the same name already exists, you will be informed about it.
+
+#### Editing Habit
+After clicking on the edit button on the level of habit that is in intrest you will get a popup that allows the change of the name of habit.
+![Edit habit](img/habit_edit.png)
+
+#### Deleteing Habit
+You can also click on the delete button for given habit. It will give you another popup with question: are you sure?
+![Delete habit](img/habit_delete.png)
+
+**Importnat**
+Deletion of Habit will aslo delete **all** habit events associated with it!
+### My habit checkin
+This page allows you to see all habits checkins - the points in time where your habit was checked as done.
+
+![Habits Checkin](img/habits_checkin.png)
+
+#### Adding habit checkin
+
+Just click on the `Add new event` button and the checkin with the current time will be added to the list. **Important** only one checking per day per habit is allowed. If you try to add more - you will see proper comunicate about that on the screen.
+
+![Habits Checkin Adding](img/habit_checkin_create.png)
+
+#### deleting habit checkin
+
+If you click on the `delete` button the given event will be removed form the lists. **After deletion you cannot bring the information back**. Thats why you will be asked if you are sure to do it.
+
+![Habits Checkin Deleting](img/habit_checkin_delete.png)
+
+### Analysis
+
+![Habits Checkin Deleting](img/analysis.png)
+
+Analysis section can give you overview on what is currently going on with your habits.
+
+The top section allways will show you the habit with the longest strikie in the history with some details around it.
+Also total number of the habits is shown.
+
+After that you can use radio buttons to see `All`, `Daily` or `weekly` habits with details around strikes for each of them.
 
 ## Running Tests
 Application came with the test that are checking the correctnes of the outcomes for functions build-into app. If you want to run them please follow steps below:
