@@ -27,6 +27,7 @@ services:
       - MYSQL_USERNAME=example
       - MYSQL_PASSWORD=test
       - MYSQL_DB_NAME=habbitapp
+      # - SKIP_EXAMPLES=TRUE
     depends_on:
       db:
         condition: service_healthy
