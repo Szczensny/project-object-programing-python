@@ -1,0 +1,35 @@
+services:
+
+  db:
+    image: mysql:9.1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: objectpython
+      MYSQL_DATABASE: habbitapp
+      MYSQL_USER: example
+      MYSQL_PASSWORD: test
+    #volumes:
+    #  - ./mysql_data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysql -u example -ptest -e 'show databases;'
+      timeout: 10s
+      retries: 10
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=example
+      - MYSQL_PASSWORD=test
+      - MYSQL_DB_NAME=habbitapp
+      # - SKIP_EXAMPLES=TRUE
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - 8080:8080
